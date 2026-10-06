@@ -1,0 +1,106 @@
+==================================================
+PROJETO RAG (FastAPI + Sentence Transformers + Ollama)
+==================================================
+
+
+--------------------------------------------------
+1. INSTALACAO (fazer so uma vez)
+--------------------------------------------------
+
+# Bibliotecas Python (rodar no CMD ou terminal do VS Code)
+python -m pip install fastapi uvicorn sentence-transformers openai requests
+
+# Ollama (rodar no POWERSHELL)
+irm https://ollama.com/install.ps1 | iex
+
+# Fechar e abrir de novo todos os terminais (e o VS Code)
+
+# Conferir se o Ollama foi instalado
+ollama --version
+
+# Baixar o modelo
+ollama pull llama3.2
+
+# Alternativa mais leve, se estiver lento
+ollama pull llama3.2:1b
+
+
+--------------------------------------------------
+2. COMO RODAR O PROJETO (toda vez)
+--------------------------------------------------
+
+# Passo 1: Ollama precisa estar ativo (icone de lhama perto do relogio)
+# Se nao estiver, abra o aplicativo Ollama pelo menu Iniciar
+# Para conferir:
+ollama list
+
+# Passo 2: ir para a pasta do projeto
+cd C:\Users\jhrab\llm_go
+
+# Passo 3: subir o servidor (terminal 1)
+python -m uvicorn main:app --reload
+
+# Esperar aparecer: Application startup complete
+
+# Passo 4: testar (abrir OUTRO terminal, terminal 2)
+python -c "import requests; print(requests.post('http://127.0.0.1:8000/query', json={'query': 'O que é llm'}).json())"
+
+# Para parar o servidor: Ctrl+C no terminal 1
+
+
+--------------------------------------------------
+3. ALTERNATIVAS
+--------------------------------------------------
+
+# Subir sem reload (se travar)
+python -m uvicorn main:app
+
+# Testar pelo navegador (botao "Try it out" no POST /query)
+http://127.0.0.1:8000/docs
+
+# Conferir se o Ollama esta rodando
+http://localhost:11434
+(deve aparecer: Ollama is running)
+
+# Rodar o Ollama manualmente (deixa o terminal ocupado)
+ollama serve
+
+# Testar o modelo direto no terminal (sair com /bye)
+ollama run llama3.2
+
+
+--------------------------------------------------
+4. SE DER ERRO
+--------------------------------------------------
+
+# Comando nao reconhecido (ollama, uvicorn)
+-> Fechar e abrir o terminal de novo
+-> Usar "python -m uvicorn ..." em vez de "uvicorn ..."
+
+# Could not import module "main"
+-> Conferir se o arquivo se chama main.py e se esta na pasta certa
+-> Rodar: python -c "import main"  (mostra o erro real)
+
+# Connection error ao testar
+-> O Ollama nao esta rodando. Abrir o app pelo menu Iniciar
+
+# model "llama3.2" not found
+-> Rodar: ollama pull llama3.2
+
+# Respostas muito lentas
+-> Usar o modelo menor: ollama pull llama3.2:1b
+   e trocar model="llama3.2" por model="llama3.2:1b" no main.py
+
+# Requisicao travada
+-> Esperar o modelo carregar na primeira vez
+
+
+--------------------------------------------------
+5. DICAS
+--------------------------------------------------
+
+- Sempre usar 2 terminais: um para o servidor, outro para testar
+- Salvar o main.py com Ctrl+S antes de testar
+- Na linha do score, usar .item() para evitar problemas:
+  score = util.cos_sim(query_embedding, doc_embeddings[doc["id"]]).item()
+- Pode remover do codigo: import os e import openai
