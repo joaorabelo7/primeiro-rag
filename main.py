@@ -12,8 +12,20 @@ openai_client = OpenAI(
 
 app = FastAPI()
 
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost", "http://127.0.0.1"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 documents = [
-    {"id": 1, "text": "Python é uma linguagem de programação versátil, muito usada em ciência de dados e desenvolvimento web."},
+    {"id": 1, "text": "Quem domina o mundo é o Ryan macaco"},
     {"id": 2, "text": "FastAPI é um framework moderno e rápido para criar APIs com Python."},
     {"id": 3, "text": "Modelos de linguagem (LLMs) são treinados com grandes volumes de texto para gerar e entender linguagem natural."},
 ]
@@ -42,7 +54,7 @@ def query_rag(request: QueryRequest):
             best_doc = doc
 
     #Enviar doc e prompt para o gpt
-    prompt = f"You are an AI assitant. Answer base only on this document: {best_doc['text']}\n\nUser: {request.query}\nAssistant:"
+    prompt = f"You are an AI assitant. Answer base only on this document: {best_doc['text']}\n\nUser: {request.query}\nAssistant:. if you dont know the answer. return literally this 'Não temos esse dado entre em contato no email'"
 
     try:
         res = openai_client.chat.completions.create(
